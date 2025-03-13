@@ -33,7 +33,7 @@ const Login = () => {
         try {
             await GoogleSignin.hasPlayServices();
             const response = await GoogleSignin.signIn();
-             console.log("Google Sign-In Response:", response);
+             console.log("Google Sign-In Response", response);
             if (response && response.user) {
                console.log("User Info:", response.user);
             Alert.alert("Google Sign-In", JSON.stringify(response.user, null, 2));

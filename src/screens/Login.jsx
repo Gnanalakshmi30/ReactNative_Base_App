@@ -22,13 +22,11 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [startLoader, setLoader] = useState(false);
 
-
-    useEffect(() => {
-        GoogleSignin.configure({
-            webClientId: OAUTH_WEB_CLIENT_ID,
-        });
-    }, [])  
-
+     GoogleSignin.configure({
+         webClientId: OAUTH_WEB_CLIENT_ID,
+         offlineAccess: true,
+    });
+ 
     const onGoogleButtonPress = async () => {
         try {
             await GoogleSignin.hasPlayServices();

@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { View, Text, FlatList, Image, TextInput, ScrollView, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import React, { useContext,useState  } from "react";
+import { View, Text, FlatList, Image, TextInput, ScrollView, TouchableOpacity, StyleSheet, Alert ,Modal} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ShoppingCart, Search } from "lucide-react-native";
 import Colors from '../styles/palette';
@@ -9,6 +9,9 @@ import { ThemeContext } from '../contexts/ThemeContext';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RNSecureStorage from 'rn-secure-storage';
 import { useSelector } from "react-redux";
+import { FloatingAction } from 'react-native-floating-action';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 
 const categories = [
@@ -30,6 +33,8 @@ const Home = () => {
     const { theme } = useContext(ThemeContext);
     let activeColors = Colors[theme.mode];
     const globalValue = useSelector((state) => state.global.value);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [message, setMessage] = useState("");
 
     const handleLogout = async () => {
 
@@ -53,9 +58,10 @@ const Home = () => {
         );
     };
     return (
+         <View style={{ flex: 1 }}>
         <ScrollView style={[styles.container, { backgroundColor: activeColors.primaryColor, }]}>
             <View style={styles.header}>
-                <Text style={[styles.headerText, { color: activeColors.secondaryColor, }]}>Hello, Welcome</Text>
+                <Text style={[styles.headerText, { color: activeColors.secondaryColor, }]}>Hello, Welcome</Text>         
                 <View style={styles.actionIconContainer}>
                     <TouchableOpacity>
                         <ShoppingCart size={moderateScale(24)} color={activeColors.secondaryColor} />
@@ -65,6 +71,7 @@ const Home = () => {
                     </TouchableOpacity>
                 </View>
             </View>
+              
             <View style={styles.searchBarContainer}>
                 <TextInput style={styles.searchBar} placeholder="Search" placeholderTextColor={Colors.greyColor} />
                 <Search size={moderateScale(20)} color={Colors.greyColor} style={styles.searchIcon} />
@@ -92,7 +99,7 @@ const Home = () => {
                 data={products}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.card} onPress={() => navigation.navigate("Details", { product: item })}>
+                    <TouchableOpacity style={styles.card} >
                         <Image source={{ uri: item.image }} style={styles.image} />
                         <Text style={styles.title}>{item.name}</Text>
                         <Text style={styles.price}>{item.price}</Text>
@@ -100,12 +107,46 @@ const Home = () => {
                 )}
                 showsHorizontalScrollIndicator={false}
             />
-        </ScrollView>
+          
+            </ScrollView>
+            <View style={styles.fabContainer}>
+                <FloatingAction
+                    onPressMain={() => {
+                                console.log("Floatingd button clicked!");                   
+                                setTimeout(() => {
+                                setModalVisible(true);
+                                console.log("Modal should be visible now");
+                            }, 100);
+                            }}
+                            color={globalValue}
+                            floatingIcon=<Ionicons name="chatbubbles-outline" size={moderateScale(30)}  color={globalValue === Colors.whiteColor ? Colors.blackColor :Colors.whiteColor } />
+                            buttonSize={moderateScale(60)}                               
+                            showBackground={false} 
+                        />
+            </View>  
+            <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.chatBox}>
+                        <Text style={styles.chatTitle}>Chat with Support</Text>
+                        <TextInput
+                            style={styles.messageInput}
+                            placeholder="Type a message..."
+                            value={message}
+                            onChangeText={setMessage}
+                        />
+                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                            <Ionicons name="close" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+           
+         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: moderateScale(15) },
+    container: { padding: moderateScale(15) },
     header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: verticalScale(10) },
     headerText: { fontSize: moderateScale(22), fontWeight: "bold" },
     searchBarContainer: { flexDirection: "row", backgroundColor: Colors.whitesmoke, borderRadius: moderateScale(10), paddingHorizontal: horizontalScale(15), alignItems: "center", marginVertical: verticalScale(10) },
@@ -126,6 +167,18 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: horizontalScale(10)
     },
+    fabContainer: {
+        position: 'absolute',
+        right: horizontalScale(20),
+        bottom: verticalScale(90), 
+        zIndex: 1000,
+        elevation: 10, 
+    },
+     modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
+    chatBox: { width: "80%", padding: 20, backgroundColor: "white", borderRadius: 10, alignItems: "center" },
+    chatTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
+    messageInput: { width: "100%", padding: 10, borderWidth: 1, borderColor: "#ddd", borderRadius: 5, marginBottom: 10 },
+    closeButton: { backgroundColor: "red", padding: 10, borderRadius: 5, marginTop: 10 }
 });
 
 export default Home;

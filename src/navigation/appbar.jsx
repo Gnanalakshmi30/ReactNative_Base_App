@@ -11,7 +11,13 @@ const CustomAppbar = ({ title }) => {
 
     return (
         <Appbar.Header style={{ backgroundColor: activeColors.primaryColor }}>
-            <Appbar.BackAction onPress={() => navigation.goBack()} color={activeColors.secondaryColor} />
+            <Appbar.BackAction onPress={() => {
+                if (navigation.canGoBack()) {
+                    return navigation.goBack();
+                    } else {
+                    return  navigation.navigate('Home'); 
+                    }
+            }} color={activeColors.secondaryColor} />
             <Appbar.Content title={title} titleStyle={{ color: activeColors.secondaryColor }} />
             <Appbar.Action icon="magnify" color={activeColors.secondaryColor} />
             <Appbar.Action icon="dots-vertical" color={activeColors.secondaryColor} />

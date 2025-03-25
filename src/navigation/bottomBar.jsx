@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext,useEffect,useState } from 'react'
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native'
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Profile from '../screens/Profile';
@@ -11,6 +11,8 @@ import Colors from '../styles/palette';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ThemeContext } from '../contexts/ThemeContext';
 import { useSelector } from "react-redux";
+import RNSecureStorage from 'rn-secure-storage';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -51,10 +53,23 @@ const CustomTabBarButton = ({ children, onPress, theme, primaryColor }) => (
     </TouchableOpacity>
 );
 
+
+
 const Tabs = () => {
     const { theme } = useContext(ThemeContext);
     let activeColors = Colors[theme.mode];
     const globalValue = useSelector((state) => state.global.value);
+    const [userRole, setUserRole] = useState("");
+
+     useEffect(() => {
+            getLoggedInUserRole();
+        }, [])
+  
+    const getLoggedInUserRole = async () => {
+        const role = await RNSecureStorage.exist('userRole') ? await RNSecureStorage.getItem('userRole') : null;  
+        setUserRole(role);
+        console.log("role",role);
+    }
 
     return (
         <Tab.Navigator initialRouteName="Home"
@@ -74,7 +89,11 @@ const Tabs = () => {
                     if (route.name == "User") {
                         iconName = 'account-supervisor';
 
-                    } else if (route.name == "Home") {
+                    }else if (route.name == "Profile") {
+                        iconName = 'account-settings';
+
+                    }
+                    else if (route.name == "Home") {
                         iconName = 'view-dashboard';
 
                     } else if (route.name == "Account") {
@@ -126,9 +145,8 @@ const Tabs = () => {
                 },
 
             })}>
-            <Tab.Screen name="User" component={UserList}
-                options={{
-
+            <Tab.Screen name={userRole !== null && userRole === "1"? "User" : "Profile"}   component={userRole !== null && userRole === "1"? UserList : Profile}
+                options={ userRole !== null && userRole === "1"?{
                     tabBarBadge: 3,
                     tabBarBadgeStyle: {
                         backgroundColor: Colors.redColor,
@@ -141,7 +159,7 @@ const Tabs = () => {
                         padding: 1
                     },
 
-                }}
+                } : {}}
             />
             <Tab.Screen name="Home" component={Home} />
             <Tab.Screen name="Notification" component={Profile}
@@ -162,7 +180,6 @@ export default Tabs;
 
 const styles = StyleSheet.create({
     shadow: {
-
         shadowOffset: {
             width: 0,
             height: verticalScale(10),

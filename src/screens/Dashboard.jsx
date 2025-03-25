@@ -93,7 +93,7 @@ const Home = () => {
                 <Text style={styles.bannerText}>Big Sale Up to 50% Discount</Text>
             </LinearGradient>
 
-            <Text style={styles.sectionTitle}>Featured</Text>
+            <Text style={[styles.sectionTitle,, { color: activeColors.secondaryColor, }]}>Featured</Text>
             <FlatList
                 horizontal
                 data={products}
@@ -111,12 +111,8 @@ const Home = () => {
             </ScrollView>
             <View style={styles.fabContainer}>
                 <FloatingAction
-                    onPressMain={() => {
-                                console.log("Floatingd button clicked!");                   
-                                setTimeout(() => {
+                            onPressMain={() => {
                                 setModalVisible(true);
-                                console.log("Modal should be visible now");
-                            }, 100);
                             }}
                             color={globalValue}
                             floatingIcon=<Ionicons name="chatbubbles-outline" size={moderateScale(30)}  color={globalValue === Colors.whiteColor ? Colors.blackColor :Colors.whiteColor } />
@@ -124,18 +120,21 @@ const Home = () => {
                             showBackground={false} 
                         />
             </View>  
-            <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => {
+                            setModalVisible(false);
+                        }}
+            >
                 <View style={styles.modalContainer}>
-                    <View style={styles.chatBox}>
-                        <Text style={styles.chatTitle}>Chat with Support</Text>
-                        <TextInput
-                            style={styles.messageInput}
-                            placeholder="Type a message..."
-                            value={message}
-                            onChangeText={setMessage}
-                        />
-                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                            <Ionicons name="close" size={24} color="white" />
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>Floating Modal</Text>
+                        <TouchableOpacity onPress={() => {
+                                    setModalVisible(false);
+                                }} style={[{ backgroundColor: Colors.dodgerBlueColor,}, styles.closeButton]}>
+                            <Text style={styles.closeButtonText}>Close</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -174,11 +173,36 @@ const styles = StyleSheet.create({
         zIndex: 1000,
         elevation: 10, 
     },
-     modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
-    chatBox: { width: "80%", padding: 20, backgroundColor: "white", borderRadius: 10, alignItems: "center" },
-    chatTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-    messageInput: { width: "100%", padding: 10, borderWidth: 1, borderColor: "#ddd", borderRadius: 5, marginBottom: 10 },
-    closeButton: { backgroundColor: "red", padding: 10, borderRadius: 5, marginTop: 10 }
+     modalContainer: {
+        flex: 1,
+        justifyContent: "flex-end", 
+        alignItems: "center",
+    },
+  modalContent: {
+        width: "70%",
+        padding:moderateScale(20),
+        backgroundColor: Colors.whiteColor,
+        marginLeft: moderateScale(120),
+        borderRadius: moderateScale(10),
+        alignItems: "center",
+        marginBottom: verticalScale(170), 
+        elevation: 5, 
+    },
+  modalText: {
+        fontSize: moderateScale(18),
+        fontWeight: "bold",
+        marginBottom: verticalScale(10),
+    },
+    closeButton: {
+        marginTop: verticalScale(10),       
+        paddingVertical: verticalScale(8),
+        paddingHorizontal: horizontalScale(20),
+        borderRadius: moderateScale(8),
+    },
+    closeButtonText: {
+        color:  Colors.whiteColor,
+        fontSize: moderateScale(16),
+    },
 });
 
 export default Home;

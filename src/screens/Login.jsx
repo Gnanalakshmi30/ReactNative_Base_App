@@ -72,19 +72,19 @@ const Login = () => {
                     Email: email,
                     Password: password,
                 };
-                const res = await Apis.login(userData);
-
-                await RNSecureStorage.setItem('jwtToken', res.token, {
-                    accessible: ACCESSIBLE.WHEN_UNLOCKED,
-                });
-
-                await RNSecureStorage.setItem('userId', res.userId, {
-                    accessible: ACCESSIBLE.WHEN_UNLOCKED,
-                });
-
-                await RNSecureStorage.setItem('userRole', res.role.toString(), {
-                    accessible: ACCESSIBLE.WHEN_UNLOCKED,
-                });
+                const res = await Apis.login(userData);   
+                
+                await Promise.all([
+                    RNSecureStorage.setItem('jwtToken', res.token, {
+                        accessible: ACCESSIBLE.WHEN_UNLOCKED,
+                    }),
+                    RNSecureStorage.setItem('userId', res.userId, {
+                        accessible: ACCESSIBLE.WHEN_UNLOCKED,
+                    }),
+                    RNSecureStorage.setItem('userRole', res.role.toString(), {
+                        accessible: ACCESSIBLE.WHEN_UNLOCKED,
+                    }),
+                ]);
                 setEmail('');
                 setPassword('');
 
